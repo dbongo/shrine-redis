@@ -17,7 +17,7 @@ require "redis"
 redis = Redis.new(url: "redis://host:port/db")
 
 Shrine.storages = {
-  :cache: Shrine::Storage::RedisStorage.new(
+  cache: Shrine::Storage::RedisStorage.new(
     redis,
     prefix: 'cache',
     expire: 60
