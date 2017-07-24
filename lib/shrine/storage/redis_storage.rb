@@ -39,10 +39,6 @@ class Shrine
         redis.del(key(id))
       end
 
-      def clear!
-        redis.flushdb
-      end
-
       private
 
       def content(id)

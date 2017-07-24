@@ -16,7 +16,7 @@ describe Shrine::Storage::RedisStorage do
   end
 
   after do
-    @redis.clear!
+    REDIS.flushdb
   end
 
   it "passes the linter" do
