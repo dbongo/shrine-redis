@@ -1,6 +1,6 @@
 Gem::Specification.new do |gem|
   gem.name         = "shrine-redis"
-  gem.version      = "0.0.0"
+  gem.version      = "0.0.1"
 
   gem.required_ruby_version = ">= 2.1"
 
