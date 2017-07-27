@@ -1,30 +1,29 @@
-# Shrine::Storage::RedisStorage
+# Shrine::Storage::Redis
 
 Provides a Shrine Storage for storing files in Redis.
 
 ## Installation
 
 ```ruby
-gem 'shrine-redis'
+gem "shrine-redis"
 ```
 
 ## Usage
 
 ```rb
-require "shrine/storage/redis_storage"
-require "redis"
+require "shrine/storage/redis"
 
 redis = Redis.new(url: "redis://host:port/db")
 
 Shrine.storages = {
-  cache: Shrine::Storage::RedisStorage.new(
-    redis,
-    prefix: 'cache',
+  cache: Shrine::Storage::Redis.new(
+    client: redis,
+    prefix: "cache",
     expire: 60
   ),
-  store: Shrine::Storage::RedisStorage.new(
-    redis,
-    prefix: 'store',
+  store: Shrine::Storage::Redis.new(
+    client: redis,
+    prefix: "store",
     expire: 3600
   )
 }

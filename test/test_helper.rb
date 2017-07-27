@@ -3,7 +3,7 @@ require "bundler/setup"
 require "minitest/autorun"
 require "minitest/spec"
 
-require "shrine/storage/redis_storage"
+require "shrine/storage/redis"
 
 require "forwardable"
 require "stringio"

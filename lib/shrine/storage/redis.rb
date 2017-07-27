@@ -5,14 +5,14 @@ require "stringio"
 
 class Shrine
   module Storage
-    class RedisStorage
+    class Redis
       attr_reader :redis, :prefix, :expire
 
-      def initialize(redis, prefix:, expire:)
-        @redis = redis
+      def initialize(client: nil, prefix: nil, expire: nil, **options)
+        @redis = client || ::Redis.new(options)
         @prefix = prefix
         @expire = expire
-        raise ArgumentError, 'Missing redis client' unless redis && redis.is_a?(Redis)
+        raise ArgumentError, 'Missing redis client' unless @redis.is_a?(::Redis)
       end
 
       def upload(io, id, shrine_metadata: {}, **upload_options)
@@ -39,18 +39,22 @@ class Shrine
         redis.del(key(id))
       end
 
+      def multi_delete(id)
+        redis.del(keys(id))
+      end
+
       private
 
       def content(id)
         redis.get(key(id)).to_s
       end
 
+      def keys(id)
+        redis.keys(key(id) + "*")
+      end
+
       def key(id)
-        if prefix
-          "#{prefix}:#{id}"
-        else
-          "#{id}"
-        end
+        [*prefix, id].join(":")
       end
     end
   end
