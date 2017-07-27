@@ -39,8 +39,12 @@ class Shrine
         redis.del(key(id))
       end
 
-      def multi_delete(id)
-        redis.del(keys(id))
+      def multi_delete(ids)
+        if ids.is_a?(Array)
+          ids.each { |id| delete(id) }
+        elsif ids.is_a?(String)
+          redis.del(keys(ids))
+        end
       end
 
       private
@@ -50,7 +54,7 @@ class Shrine
       end
 
       def keys(id)
-        redis.keys(key(id) + "*")
+        redis.keys(key(id))
       end
 
       def key(id)

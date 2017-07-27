@@ -64,17 +64,25 @@ describe Shrine::Storage::Redis do
   end
 
   describe "#multi_delete" do
-    it "deletes multiple files from redis storage" do
+    it "deletes multiple files from redis storage using array of ids" do
       @redis.upload(fakeio, "123456789:fake.jpg")
-      @redis.upload(fakeio, "123456789:fake_32x32.jpg")
-      @redis.upload(fakeio, "123456789:fake_64x64.png")
       @redis.upload(fakeio, "123456789:real.jpg")
 
-      @redis.multi_delete("123456789:fake")
+      @redis.multi_delete(["123456789:fake.jpg","123456789:real.jpg"])
+
+      assert_equal false, @redis.exists?("123456789:fake.jpg")
+      assert_equal false, @redis.exists?("123456789:real.jpg")
+    end
+
+    it "deletes multiple files from redis storage using string pattern" do
+      @redis.upload(fakeio, "123456789:fake.jpg")
+      @redis.upload(fakeio, "123456789:fake_32x32.jpg")
+      @redis.upload(fakeio, "123456789:real.jpg")
+
+      @redis.multi_delete("123456789:fake*")
 
       assert_equal false, @redis.exists?("123456789:fake.jpg")
       assert_equal false, @redis.exists?("123456789:fake_32x32.jpg")
-      assert_equal false, @redis.exists?("123456789:fake_64x64.png")
       assert_equal true, @redis.exists?("123456789:real.jpg")
     end
   end
