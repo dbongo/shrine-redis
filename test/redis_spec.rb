@@ -24,7 +24,7 @@ describe Shrine::Storage::Redis do
   end
 
   describe "#upload" do
-    it "uploads file to redis storage" do
+    it "uploads file" do
       assert_equal false, REDIS.exists("store:123456789:fake.jpg")
 
       @redis.upload(fakeio, "123456789:fake.jpg")
@@ -34,7 +34,7 @@ describe Shrine::Storage::Redis do
   end
 
   describe "#exists?" do
-    it "checks for file in redis storage" do
+    it "checks for file" do
       @redis.upload(fakeio, "123456789:fake.jpg")
 
       assert_equal true, @redis.exists?("123456789:fake.jpg")
@@ -42,7 +42,7 @@ describe Shrine::Storage::Redis do
   end
 
   describe "#open" do
-    it "opens file from redis storage" do
+    it "opens file" do
       @redis.upload(fakeio, "123456789:fake.jpg")
 
       img = @redis.open("123456789:fake.jpg")
@@ -52,7 +52,7 @@ describe Shrine::Storage::Redis do
   end
 
   describe "#delete" do
-    it "deletes single file from redis storage" do
+    it "deletes single file" do
       @redis.upload(fakeio, "123456789:fake.jpg")
 
       assert_equal true, @redis.exists?("123456789:fake.jpg")
@@ -64,7 +64,7 @@ describe Shrine::Storage::Redis do
   end
 
   describe "#multi_delete" do
-    it "deletes multiple files from redis storage using array of ids" do
+    it "deletes multiple files using array of ids" do
       @redis.upload(fakeio, "123456789:fake.jpg")
       @redis.upload(fakeio, "123456789:real.jpg")
 
@@ -72,9 +72,11 @@ describe Shrine::Storage::Redis do
 
       assert_equal false, @redis.exists?("123456789:fake.jpg")
       assert_equal false, @redis.exists?("123456789:real.jpg")
+
+      @redis.multi_delete(["123456789:fake.jpg","123456789:real.jpg"])
     end
 
-    it "deletes multiple files from redis storage using string pattern" do
+    it "deletes multiple files using string pattern" do
       @redis.upload(fakeio, "123456789:fake.jpg")
       @redis.upload(fakeio, "123456789:fake_32x32.jpg")
       @redis.upload(fakeio, "123456789:real.jpg")
@@ -84,6 +86,20 @@ describe Shrine::Storage::Redis do
       assert_equal false, @redis.exists?("123456789:fake.jpg")
       assert_equal false, @redis.exists?("123456789:fake_32x32.jpg")
       assert_equal true, @redis.exists?("123456789:real.jpg")
+    end
+
+    it "calling mutli_delete twice using same string pattern does not throw exception" do
+      @redis.upload(fakeio, "123456789:fake.jpg")
+      @redis.upload(fakeio, "123456789:fake_32x32.jpg")
+      @redis.upload(fakeio, "123456789:real.jpg")
+
+      @redis.multi_delete("123456789:fake*")
+
+      assert_equal false, @redis.exists?("123456789:fake.jpg")
+      assert_equal false, @redis.exists?("123456789:fake_32x32.jpg")
+      assert_equal true, @redis.exists?("123456789:real.jpg")
+
+      @redis.multi_delete("123456789:fake*")
     end
   end
 end

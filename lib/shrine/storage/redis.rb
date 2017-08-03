@@ -43,7 +43,7 @@ class Shrine
         if ids.is_a?(Array)
           ids.each { |id| delete(id) }
         elsif ids.is_a?(String)
-          redis.del(keys(ids))
+          redis.del(keys(ids)) unless keys(ids).empty?
         end
       end
 
