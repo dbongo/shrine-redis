@@ -11,21 +11,20 @@ gem "shrine-redis"
 ## Usage
 
 ```rb
+# This example assumes a redis-server instance is running in the background
+
+require "redis"
+require "shrine"
 require "shrine/storage/redis"
 
-redis = Redis.new(url: "redis://host:port/db")
+redis = Redis.new
+
+cache = { client: redis, prefix: "cache", expire: 60 }
+store = { client: redis, prefix: "store", expire: 3600 }
 
 Shrine.storages = {
-  cache: Shrine::Storage::Redis.new(
-    client: redis,
-    prefix: "cache",
-    expire: 60
-  ),
-  store: Shrine::Storage::Redis.new(
-    client: redis,
-    prefix: "store",
-    expire: 3600
-  )
+  cache: Shrine::Storage::Redis.new(cache),
+  store: Shrine::Storage::Redis.new(store)
 }
 ```
 
